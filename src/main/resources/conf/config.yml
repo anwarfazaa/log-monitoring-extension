@@ -48,3 +48,12 @@ eventsServiceParameters:
   globalAccountName: ""
   eventsApiKey: ""
   useSSL: false
+  
+# For enabling/disabling log snapshots, also to enable needed features
+# feature #1 enable snapshots via Controller custom events, actions & policies.
+# feature #2 enable snapshots via SMTP email
+enabledSnapshotsFeatures:
+  LogSnapshots: false
+  ControllerBasedSnapshots : false
+  SMTPBasedSnapshots : false
+
