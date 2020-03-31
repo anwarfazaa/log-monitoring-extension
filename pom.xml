@@ -15,6 +15,7 @@
         <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss</maven.build.timestamp.format>
         <target.dir>${project.build.directory}/LogMonitor</target.dir>
         <skipITs>true</skipITs>
+        <maven.test.skip>true</maven.test.skip>
     </properties>
 
     <dependencies>
