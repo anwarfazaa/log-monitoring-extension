@@ -26,13 +26,12 @@ public class SMTPEmail {
     
     public SMTPEmail() {
         emailObj = new EmailObject();
+        from = emailObj.SMTPServerInformation().get("from");
+        username = emailObj.SMTPServerInformation().get("username");
+        password = emailObj.SMTPServerInformation().get("password");
     }
     
     public void send(String Body,String recipient) {
-        
-    from = emailObj.SMTPServerInformation().get("from");
-    username = emailObj.SMTPServerInformation().get("username");
-    password = emailObj.SMTPServerInformation().get("password");
     Properties props = new Properties();
     props.put("mail.smtp.auth", "true");
     // to be implemented - enable support for tls or ssl
