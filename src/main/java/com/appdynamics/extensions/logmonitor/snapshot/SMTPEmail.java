@@ -19,10 +19,10 @@ import org.slf4j.Logger;
 public class SMTPEmail {
 
     private static Logger LOGGER = ExtensionsLoggerFactory.getLogger(SMTPEmail.class);
-    EmailObject emailObj;
-    String from;
-    String username;
-    String password;
+    private EmailObject emailObj;
+    private String from;
+    private String username;
+    private String password;
     
     public SMTPEmail() {
         emailObj = new EmailObject();
