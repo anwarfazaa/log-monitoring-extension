@@ -6,7 +6,10 @@
 package com.appdynamics.extensions.logmonitor.snapshot;
 
 import com.appdynamics.extensions.logmonitor.snapshot.config.EmailConfiguration;
+import com.google.common.collect.Maps;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -15,24 +18,29 @@ import java.util.Map;
  */
 public class EmailObject {
     
-    private Map<String,String> configurationSet;
+    private Map<String,?> configYml;
     private EmailConfiguration emailConfiguration; 
+    private Map<String, String> SMTPServer;
+    private Map<String, String> emailControl;
+    
     
   public EmailObject(){
       emailConfiguration = new EmailConfiguration();
-      configurationSet = new HashMap<>();
-      configurationSet.put("to", emailConfiguration.Values.get("to").toString());
-      configurationSet.put("cc", emailConfiguration.Values.get("cc").toString());
-      configurationSet.put("bcc",emailConfiguration.Values.get("bcc").toString());
-      configurationSet.put("body","");
+      configYml = Maps.newHashMap();
+      configYml = emailConfiguration.Values;
+      emailConfiguration = new EmailConfiguration();
+      SMTPServer = (Map<String,String>) configYml.get("smtpEmailAccount");
+      emailControl = (Map<String,String>) configYml.get("emailRecipients");
   } 
+ 
   
-  public void setEmailBody(String emailBody) {
-      this.configurationSet.put("body", emailBody);
+  
+  public Map<String,String> SMTPServerInformation() {
+      return this.SMTPServer;
   }
   
-  public Map<String,String> EmailConfiguration() {
-      return this.EmailConfiguration();
+  public Map<String,String> emailControlInformaiton () {
+      return this.emailControl;
   }
     
 }
