@@ -1,20 +1,12 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.appdynamics.extensions.logmonitor.snapshot;
 
 import com.appdynamics.extensions.logmonitor.snapshot.config.EmailConfiguration;
 import com.google.common.collect.Maps;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
  *
- * @author Anwar
+ * @author Anwar Fazaa
  */
 public class EmailObject {
     
