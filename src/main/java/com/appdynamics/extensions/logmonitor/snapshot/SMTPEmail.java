@@ -24,22 +24,25 @@ public class SMTPEmail {
     private String username;
     private String password;
     Properties emailProps;
+    public String Recipients;
     
     public SMTPEmail() {
         emailObj = new EmailObject();
         from = emailObj.SMTPServerInformation().get("from");
         username = emailObj.SMTPServerInformation().get("username");
         password = emailObj.SMTPServerInformation().get("password");
+        Recipients = emailObj.SMTPServerInformation().get("emailRecipients");
         emailProps = new Properties();
         
         emailProps.put("mail.smtp.auth", "true");
         // to be implemented - enable support for tls or ssl
         emailProps.put("mail.smtp.starttls.enable", "true");
-        emailProps.put("mail.smtp.host", emailObj.SMTPServerInformation().get("host"));
+        //emailProps.put("mail.smtp.host", emailObj.SMTPServerInformation().get("host"));
+        emailProps.put("mail.smtp.ssl.trust", emailObj.SMTPServerInformation().get("host"));
         emailProps.put("mail.smtp.port", emailObj.SMTPServerInformation().get("port"));
     }
     
-    public void sendEmail(String Body,String recipient) {
+    public void sendEmail(String Body,InternetAddress[] recipients) {
     
     // Get the Session object
     Session session = Session.getInstance(emailProps,
@@ -56,9 +59,9 @@ public class SMTPEmail {
 
             message.setFrom(new InternetAddress(from));
 
-            message.setRecipients(Message.RecipientType.TO,
-            InternetAddress.parse(recipient));
-
+            message.setRecipients(Message.RecipientType.TO,recipients);
+            
+            
             // Set Subject
             message.setSubject(emailObj.emailControlInformaiton().get("emailSubject"));
 
