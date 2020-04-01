@@ -66,7 +66,7 @@ public class SMTPEmail {
             message.setSubject(emailObj.emailControlInformaiton().get("emailSubject"));
 
             // Put the content of your message
-            message.setText(Body);
+            message.setContent(Body,"text/html");
 
             // Send message
             Transport.send(message);
