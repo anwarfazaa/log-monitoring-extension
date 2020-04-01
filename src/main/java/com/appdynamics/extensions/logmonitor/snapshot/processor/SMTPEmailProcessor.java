@@ -6,12 +6,8 @@
 package com.appdynamics.extensions.logmonitor.snapshot.processor;
 
 import com.appdynamics.extensions.logmonitor.snapshot.SMTPEmail;
-import java.lang.reflect.Array;
-import java.util.Arrays;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.mail.Address;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 
@@ -22,7 +18,6 @@ import javax.mail.internet.InternetAddress;
 public class SMTPEmailProcessor {
     
     SMTPEmail smtp;
-    List<Address> AddressList;
     
     
     public SMTPEmailProcessor() {
