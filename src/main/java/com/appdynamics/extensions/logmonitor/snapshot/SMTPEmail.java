@@ -23,24 +23,26 @@ public class SMTPEmail {
     private String from;
     private String username;
     private String password;
+    Properties emailProps;
     
     public SMTPEmail() {
         emailObj = new EmailObject();
         from = emailObj.SMTPServerInformation().get("from");
         username = emailObj.SMTPServerInformation().get("username");
         password = emailObj.SMTPServerInformation().get("password");
+        emailProps = new Properties();
+        
+        emailProps.put("mail.smtp.auth", "true");
+        // to be implemented - enable support for tls or ssl
+        emailProps.put("mail.smtp.starttls.enable", "true");
+        emailProps.put("mail.smtp.host", emailObj.SMTPServerInformation().get("host"));
+        emailProps.put("mail.smtp.port", emailObj.SMTPServerInformation().get("port"));
     }
     
-    public void send(String Body,String recipient) {
-    Properties props = new Properties();
-    props.put("mail.smtp.auth", "true");
-    // to be implemented - enable support for tls or ssl
-    props.put("mail.smtp.starttls.enable", "true");
-    props.put("mail.smtp.host", emailObj.SMTPServerInformation().get("host"));
-    props.put("mail.smtp.port", emailObj.SMTPServerInformation().get("port"));
-
+    public void sendEmail(String Body,String recipient) {
+    
     // Get the Session object
-    Session session = Session.getInstance(props,
+    Session session = Session.getInstance(emailProps,
     new javax.mail.Authenticator() {
         @Override
         protected PasswordAuthentication getPasswordAuthentication() {
@@ -67,7 +69,7 @@ public class SMTPEmail {
             Transport.send(message);
 
         } catch (MessagingException e) {
-            LOGGER.info("Email exception: " + e.toString());
+            LOGGER.warn("Email sending exception: " + e.toString());
         }
     }
     
