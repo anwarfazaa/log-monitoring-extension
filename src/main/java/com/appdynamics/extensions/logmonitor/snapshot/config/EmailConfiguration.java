@@ -16,7 +16,6 @@ import java.util.Map;
 public class EmailConfiguration {
    public Map<String, ?> Values;
    private MonitorContextConfiguration monitorContextConfiguration;
-   private Map<String,String> configurationSet;
 
     public EmailConfiguration() {
         this.Values = Maps.newHashMap();
