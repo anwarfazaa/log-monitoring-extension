@@ -22,7 +22,6 @@ public class SMTPEmailProcessor {
     
     public SMTPEmailProcessor() {
         smtp = new SMTPEmail();
-        
     }
     
     public InternetAddress[] prepareReciepientsList() throws AddressException {
