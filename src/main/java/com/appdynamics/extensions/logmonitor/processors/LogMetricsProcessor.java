@@ -14,6 +14,7 @@ import com.appdynamics.extensions.logmonitor.config.FilePointer;
 import com.appdynamics.extensions.logmonitor.config.Log;
 import com.appdynamics.extensions.logmonitor.config.SearchPattern;
 import com.appdynamics.extensions.logmonitor.metrics.LogMetrics;
+import com.appdynamics.extensions.logmonitor.snapshot.processor.SMTPEmailProcessor;
 import com.appdynamics.extensions.metrics.Metric;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.WordUtils;
@@ -47,6 +48,7 @@ public class LogMetricsProcessor implements Runnable {
     private EventsServiceDataManager eventsServiceDataManager;
     private LogEventsProcessor logEventsProcessor;
     private int offset;
+    private SMTPEmailProcessor smtp;
 
     LogMetricsProcessor(OptimizedRandomAccessFile randomAccessFile, Log log, CountDownLatch latch, LogMetrics logMetrics,
                         File currentFile, EventsServiceDataManager eventsServiceDataManager,
@@ -59,6 +61,7 @@ public class LogMetricsProcessor implements Runnable {
         this.searchPatterns = createPattern(this.log.getSearchStrings());
         this.eventsServiceDataManager = eventsServiceDataManager;
         this.offset = offset;
+        this.smtp = new SMTPEmailProcessor();
     }
 
     public void run() {
@@ -103,11 +106,17 @@ public class LogMetricsProcessor implements Runnable {
     }
 
     private void incrementWordCountIfSearchStringMatched(List<SearchPattern> searchPatterns, String stringToCheck) {
+        // To be modified
+        
         for (SearchPattern searchPattern : searchPatterns) {
             Matcher matcher = searchPattern.getPattern().matcher(stringToCheck);
             String currentKey = getSearchStringPrefix() + searchPattern.getDisplayName() + METRIC_SEPARATOR;
-
+            
             while (matcher.find()) {
+                // Send email snapshot after find
+                // this will be checked.
+                smtp.executeEmailSender(stringToCheck);
+                
                 BigInteger occurrences = new BigInteger(logMetrics.getMetrics().get(currentKey + OCCURRENCES)
                         .getMetricValue());
                 String metricName = currentKey + OCCURRENCES;
