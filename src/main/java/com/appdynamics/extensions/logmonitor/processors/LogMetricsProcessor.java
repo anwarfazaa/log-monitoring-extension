@@ -8,6 +8,7 @@
 
 package com.appdynamics.extensions.logmonitor.processors;
 
+import com.appdynamics.extensions.conf.MonitorContextConfiguration;
 import com.appdynamics.extensions.eventsservice.EventsServiceDataManager;
 import com.appdynamics.extensions.logging.ExtensionsLoggerFactory;
 import com.appdynamics.extensions.logmonitor.config.FilePointer;
@@ -52,7 +53,7 @@ public class LogMetricsProcessor implements Runnable {
 
     LogMetricsProcessor(OptimizedRandomAccessFile randomAccessFile, Log log, CountDownLatch latch, LogMetrics logMetrics,
                         File currentFile, EventsServiceDataManager eventsServiceDataManager,
-                        int offset) {
+                        int offset,MonitorContextConfiguration monitorContextConfiguration) {
         this.randomAccessFile = randomAccessFile;
         this.log = log;
         this.latch = latch;
@@ -61,7 +62,7 @@ public class LogMetricsProcessor implements Runnable {
         this.searchPatterns = createPattern(this.log.getSearchStrings());
         this.eventsServiceDataManager = eventsServiceDataManager;
         this.offset = offset;
-        this.smtp = new SMTPEmailProcessor();
+        this.smtp = new SMTPEmailProcessor(monitorContextConfiguration);
     }
 
     public void run() {

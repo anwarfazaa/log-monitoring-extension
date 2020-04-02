@@ -1,6 +1,6 @@
 package com.appdynamics.extensions.logmonitor.snapshot;
 
-import com.appdynamics.extensions.logmonitor.snapshot.config.EmailConfiguration;
+import com.appdynamics.extensions.conf.MonitorContextConfiguration;
 import com.google.common.collect.Maps;
 import java.util.Map;
 
@@ -11,18 +11,17 @@ import java.util.Map;
 public class EmailObject {
     
     private Map<String,?> configYml;
-    private EmailConfiguration emailConfiguration; 
     private Map<String, String> SMTPServer;
     private Map<String, String> emailControl;
     
     
-  public EmailObject(){
-      emailConfiguration = new EmailConfiguration();
-      configYml = Maps.newHashMap();
-      configYml = emailConfiguration.Values;
-      emailConfiguration = new EmailConfiguration();
-      SMTPServer = (Map<String,String>) configYml.get("smtpEmailAccount");
-      emailControl = (Map<String,String>) configYml.get("emailRecipients");
+  public EmailObject(MonitorContextConfiguration monitorContextConfiguration){
+      //emailConfiguration = new EmailConfiguration(monitorContextConfiguration);
+      //configYml = Maps.newHashMap();
+      //configYml = emailConfiguration.Values;
+      //emailConfiguration = new EmailConfiguration(monitorContextConfiguration);
+      SMTPServer = (Map<String,String>) monitorContextConfiguration.getConfigYml().get("smtpEmailAccount");
+      emailControl = (Map<String,String>) monitorContextConfiguration.getConfigYml().get("emailRecipients");
   } 
  
   

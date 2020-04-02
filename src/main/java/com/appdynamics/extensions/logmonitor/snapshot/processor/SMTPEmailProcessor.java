@@ -5,6 +5,7 @@
  */
 package com.appdynamics.extensions.logmonitor.snapshot.processor;
 
+import com.appdynamics.extensions.conf.MonitorContextConfiguration;
 import com.appdynamics.extensions.logmonitor.snapshot.SMTPEmail;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -20,8 +21,8 @@ public class SMTPEmailProcessor {
     SMTPEmail smtp;
     
     
-    public SMTPEmailProcessor() {
-        smtp = new SMTPEmail();
+    public SMTPEmailProcessor(MonitorContextConfiguration monitorContextConfiguration) {
+        smtp = new SMTPEmail(monitorContextConfiguration);
     }
     
     public InternetAddress[] prepareReciepientsList() throws AddressException {

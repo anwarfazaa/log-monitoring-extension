@@ -1,5 +1,6 @@
 package com.appdynamics.extensions.logmonitor.snapshot;
 
+import com.appdynamics.extensions.conf.MonitorContextConfiguration;
 import com.appdynamics.extensions.logging.ExtensionsLoggerFactory;
 import com.appdynamics.extensions.logmonitor.LogMonitor;
 import java.util.Properties;
@@ -26,8 +27,8 @@ public class SMTPEmail {
     Properties emailProps;
     public String Recipients;
     
-    public SMTPEmail() {
-        emailObj = new EmailObject();
+    public SMTPEmail(MonitorContextConfiguration monitorContextConfiguration) {
+        emailObj = new EmailObject(monitorContextConfiguration);
         from = emailObj.SMTPServerInformation().get("from");
         username = emailObj.SMTPServerInformation().get("username");
         password = emailObj.SMTPServerInformation().get("password");

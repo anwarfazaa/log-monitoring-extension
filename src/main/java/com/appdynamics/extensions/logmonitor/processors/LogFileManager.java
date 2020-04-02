@@ -101,7 +101,7 @@ public class LogFileManager {
                 randomAccessFile.seek(0);
             }
             executorService.execute("LogMetricsProcessor", new LogMetricsProcessor(randomAccessFile, log, latch,
-                    logMetrics, currentFile, eventsServiceDataManager, offset));
+                    logMetrics, currentFile, eventsServiceDataManager, offset , monitorContextConfiguration));
         }
     }
 
@@ -113,7 +113,7 @@ public class LogFileManager {
         OptimizedRandomAccessFile randomAccessFile = new OptimizedRandomAccessFile(file, "r");
         randomAccessFile.seek(currentFilePointerPosition);
         executorService.execute("LogMetricsProcessor", new LogMetricsProcessor(randomAccessFile, log, latch, logMetrics,
-                file, eventsServiceDataManager, offset));
+                file, eventsServiceDataManager, offset , monitorContextConfiguration));
     }
 
     private void setNewFilePointer(String dynamicLogPath, CopyOnWriteArrayList<FilePointer> filePointers) {
