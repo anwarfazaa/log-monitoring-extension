@@ -46,13 +46,15 @@ public class LogFileManager {
     private MonitorExecutorService executorService;
     private EventsServiceDataManager eventsServiceDataManager;
     private int offset;
+    private Map<String , ?> globalConfigYml;
 
     public LogFileManager(FilePointerProcessor filePointerProcessor, Log log,
-                          MonitorContextConfiguration monitorContextConfiguration) {
+                          MonitorContextConfiguration monitorContextConfiguration,Map<String , ?> globalConfigYml) {
         this.log = log;
         this.filePointerProcessor = filePointerProcessor;
         this.monitorContextConfiguration = monitorContextConfiguration;
         this.executorService = this.monitorContextConfiguration.getContext().getExecutorService();
+        this.globalConfigYml = globalConfigYml;
     }
 
     public LogMetrics processLogMetrics() throws Exception {
@@ -101,7 +103,7 @@ public class LogFileManager {
                 randomAccessFile.seek(0);
             }
             executorService.execute("LogMetricsProcessor", new LogMetricsProcessor(randomAccessFile, log, latch,
-                    logMetrics, currentFile, eventsServiceDataManager, offset , monitorContextConfiguration));
+                    logMetrics, currentFile, eventsServiceDataManager, offset , monitorContextConfiguration , globalConfigYml));
         }
     }
 
@@ -113,7 +115,7 @@ public class LogFileManager {
         OptimizedRandomAccessFile randomAccessFile = new OptimizedRandomAccessFile(file, "r");
         randomAccessFile.seek(currentFilePointerPosition);
         executorService.execute("LogMetricsProcessor", new LogMetricsProcessor(randomAccessFile, log, latch, logMetrics,
-                file, eventsServiceDataManager, offset , monitorContextConfiguration));
+                file, eventsServiceDataManager, offset , monitorContextConfiguration , globalConfigYml));
     }
 
     private void setNewFilePointer(String dynamicLogPath, CopyOnWriteArrayList<FilePointer> filePointers) {

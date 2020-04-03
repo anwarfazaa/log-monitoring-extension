@@ -23,6 +23,7 @@ import java.util.List;
 import static com.appdynamics.extensions.logmonitor.util.Constants.SCHEMA_NAME;
 import static com.appdynamics.extensions.logmonitor.util.LogMonitorUtil.getFinalMetricList;
 import static com.appdynamics.extensions.logmonitor.util.LogMonitorUtil.prepareEventsForPublishing;
+import java.util.Map;
 
 /**
  * @author Aditya Jagtiani
@@ -34,13 +35,15 @@ public class LogMonitorTask implements AMonitorTaskRunnable {
     private MonitorContextConfiguration monitorContextConfiguration;
     private Log log;
     private FilePointerProcessor filePointerProcessor;
+    private Map<String , ? > globalConfigYml;
 
     public LogMonitorTask(MonitorContextConfiguration monitorContextConfiguration, MetricWriteHelper metricWriteHelper,
-                          Log log, FilePointerProcessor filePointerProcessor) {
+                          Log log, FilePointerProcessor filePointerProcessor , Map<String , ? > globalConfigYml) {
         this.monitorContextConfiguration = monitorContextConfiguration;
         this.metricWriteHelper = metricWriteHelper;
         this.log = log;
         this.filePointerProcessor = filePointerProcessor;
+        this.globalConfigYml = globalConfigYml;
     }
 
     public void run() {
@@ -56,7 +59,7 @@ public class LogMonitorTask implements AMonitorTaskRunnable {
     }
 
     private void populateAndPrintMetrics() throws Exception {
-        LogFileManager logFileManager = new LogFileManager(filePointerProcessor, log, monitorContextConfiguration);
+        LogFileManager logFileManager = new LogFileManager(filePointerProcessor, log, monitorContextConfiguration , globalConfigYml);
         LogMetrics logMetrics = logFileManager.processLogMetrics();
         publishEvents(logMetrics);
         LOGGER.info("Printing {} metrics for Log {}", logMetrics.getMetrics().size(), log.getDisplayName());

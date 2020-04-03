@@ -88,7 +88,7 @@ public class LogFileManagerTest {
                 "Custom Metrics|Log Monitor|", Mockito.mock(File.class), Mockito.mock(AMonitorJob.class));
         monitorContextConfiguration.setConfigYml("src/test/resources/conf/config.yaml");
 
-        classUnderTest = new LogFileManager(mockFilePointerProcessor, log, monitorContextConfiguration);
+        classUnderTest = new LogFileManager(mockFilePointerProcessor, log, monitorContextConfiguration , monitorContextConfiguration.getConfigYml());
         LogMetrics logMetrics = classUnderTest.processLogMetrics();
         Map<String, Metric> metrics = logMetrics.getMetrics();
 
@@ -133,8 +133,8 @@ public class LogFileManagerTest {
         FilePointer filePointer = new FilePointer();
         filePointer.setFilename(log.getLogDirectory() + log.getLogName());
         when(mockFilePointerProcessor.getFilePointer(anyString(), anyString())).thenReturn(filePointer);
-        classUnderTest = new LogFileManager(mockFilePointerProcessor, log, monitorContextConfiguration);
-        classUnderTest = new LogFileManager(mockFilePointerProcessor, log, monitorContextConfiguration);
+        classUnderTest = new LogFileManager(mockFilePointerProcessor, log, monitorContextConfiguration , monitorContextConfiguration.getConfigYml());
+        classUnderTest = new LogFileManager(mockFilePointerProcessor, log, monitorContextConfiguration , monitorContextConfiguration.getConfigYml());
         LogMetrics logMetrics = classUnderTest.processLogMetrics();
         Map<String, Metric> metrics = logMetrics.getMetrics();
 
@@ -189,7 +189,7 @@ public class LogFileManagerTest {
                 "Custom Metrics|Log Monitor|", Mockito.mock(File.class), Mockito.mock(AMonitorJob.class));
         monitorContextConfiguration.setConfigYml("src/test/resources/conf/config.yaml");
 
-        classUnderTest = new LogFileManager(mockFilePointerProcessor, log, monitorContextConfiguration);
+        classUnderTest = new LogFileManager(mockFilePointerProcessor, log, monitorContextConfiguration , monitorContextConfiguration.getConfigYml());
         LogMetrics logMetrics = classUnderTest.processLogMetrics();
         Map<String, Metric> metrics = logMetrics.getMetrics();
         assertEquals("5", metrics.get("TestUTF16Log|Search String|Debug|Occurrences").getMetricValue());
@@ -255,7 +255,7 @@ public class LogFileManagerTest {
         filePointer.setFilename(log.getLogDirectory() + log.getLogName());
         when(mockFilePointerProcessor.getFilePointer(anyString(), anyString())).thenReturn(filePointer);
 
-        classUnderTest = new LogFileManager(mockFilePointerProcessor, log, monitorContextConfiguration);
+        classUnderTest = new LogFileManager(mockFilePointerProcessor, log, monitorContextConfiguration , monitorContextConfiguration.getConfigYml());
         LogMetrics logMetrics = classUnderTest.processLogMetrics();
         Map<String, Metric> metrics = logMetrics.getMetrics();
 
@@ -312,7 +312,7 @@ public class LogFileManagerTest {
         filePointer.setFilename(log.getLogDirectory() + log.getLogName());
         when(mockFilePointerProcessor.getFilePointer(anyString(), anyString())).thenReturn(filePointer);
 
-        classUnderTest = new LogFileManager(mockFilePointerProcessor, log, monitorContextConfiguration);
+        classUnderTest = new LogFileManager(mockFilePointerProcessor, log, monitorContextConfiguration , monitorContextConfiguration.getConfigYml());
         LogMetrics logMetrics = classUnderTest.processLogMetrics();
         Map<String, Metric> metrics = logMetrics.getMetrics();
 
@@ -380,7 +380,7 @@ public class LogFileManagerTest {
         filePointer.setFilename(log.getLogDirectory() + File.separator + log.getLogName());
         when(mockFilePointerProcessor.getFilePointer(anyString(), anyString())).thenReturn(filePointer);
 
-        classUnderTest = new LogFileManager(mockFilePointerProcessor, log, monitorContextConfiguration);
+        classUnderTest = new LogFileManager(mockFilePointerProcessor, log, monitorContextConfiguration , monitorContextConfiguration.getConfigYml());
         LogMetrics result = classUnderTest.processLogMetrics();
         Map<String, Metric> metrics = result.getMetrics();
 
@@ -412,7 +412,7 @@ public class LogFileManagerTest {
                 new Date() + "	DEBUG	This is the fifth line");
         updateLogFile(testFilepath, logsToAdd);
 
-        classUnderTest = new LogFileManager(mockFilePointerProcessor, log, monitorContextConfiguration);
+        classUnderTest = new LogFileManager(mockFilePointerProcessor, log, monitorContextConfiguration , monitorContextConfiguration.getConfigYml());
         result = classUnderTest.processLogMetrics();
         metrics = result.getMetrics();
 
@@ -460,7 +460,7 @@ public class LogFileManagerTest {
         monitorContextConfiguration.setConfigYml("src/test/resources/conf/config.yaml");
         when(mockFilePointerProcessor.getFilePointer(anyString(), anyString())).thenReturn(filePointer);
 
-        classUnderTest = new LogFileManager(mockFilePointerProcessor, log, monitorContextConfiguration);
+        classUnderTest = new LogFileManager(mockFilePointerProcessor, log, monitorContextConfiguration , monitorContextConfiguration.getConfigYml());
         LogMetrics logMetrics = classUnderTest.processLogMetrics();
 
         String filesize = getFileSize(log.getLogDirectory(), testFilename);
@@ -537,7 +537,7 @@ public class LogFileManagerTest {
         monitorContextConfiguration.setConfigYml("src/test/resources/conf/config.yaml");
         when(mockFilePointerProcessor.getFilePointer(anyString(), anyString())).thenReturn(filePointer);
 
-        classUnderTest = new LogFileManager(mockFilePointerProcessor, log, monitorContextConfiguration);
+        classUnderTest = new LogFileManager(mockFilePointerProcessor, log, monitorContextConfiguration , monitorContextConfiguration.getConfigYml());
         LogMetrics logMetrics = classUnderTest.processLogMetrics();
         Map<String, Metric> metrics = logMetrics.getMetrics();
 
@@ -603,7 +603,7 @@ public class LogFileManagerTest {
                 "Custom Metrics|Log Monitor|", Mockito.mock(File.class), Mockito.mock(AMonitorJob.class));
         monitorContextConfiguration.setConfigYml("src/test/resources/conf/config-eventsService.yaml");
 
-        classUnderTest = new LogFileManager(mockFilePointerProcessor, log, monitorContextConfiguration);
+        classUnderTest = new LogFileManager(mockFilePointerProcessor, log, monitorContextConfiguration , monitorContextConfiguration.getConfigYml());
         LogMetrics logMetrics = classUnderTest.processLogMetrics();
         Map<String, Metric> metrics = logMetrics.getMetrics();
 

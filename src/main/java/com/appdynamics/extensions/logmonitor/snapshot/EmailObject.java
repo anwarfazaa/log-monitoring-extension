@@ -9,19 +9,17 @@ import java.util.Map;
  * @author Anwar Fazaa
  */
 public class EmailObject {
-    
-    private Map<String,?> configYml;
     private Map<String, String> SMTPServer;
     private Map<String, String> emailControl;
     
     
-  public EmailObject(MonitorContextConfiguration monitorContextConfiguration){
+  public EmailObject(Map<String, ?> monitorContextConfiguration, int x){
       //emailConfiguration = new EmailConfiguration(monitorContextConfiguration);
       //configYml = Maps.newHashMap();
       //configYml = emailConfiguration.Values;
       //emailConfiguration = new EmailConfiguration(monitorContextConfiguration);
-      SMTPServer = (Map<String,String>) monitorContextConfiguration.getConfigYml().get("smtpEmailAccount");
-      emailControl = (Map<String,String>) monitorContextConfiguration.getConfigYml().get("emailRecipients");
+      SMTPServer = (Map<String,String>) monitorContextConfiguration.get("smtpEmailAccount");
+      emailControl = (Map<String,String>) monitorContextConfiguration.get("emailRecipients");
   } 
  
   

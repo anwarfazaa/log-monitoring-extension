@@ -50,10 +50,11 @@ public class LogMetricsProcessor implements Runnable {
     private LogEventsProcessor logEventsProcessor;
     private int offset;
     private SMTPEmailProcessor smtp;
+    private Map <String , ?> globalYamlConfig;
 
     LogMetricsProcessor(OptimizedRandomAccessFile randomAccessFile, Log log, CountDownLatch latch, LogMetrics logMetrics,
                         File currentFile, EventsServiceDataManager eventsServiceDataManager,
-                        int offset,MonitorContextConfiguration monitorContextConfiguration) {
+                        int offset,MonitorContextConfiguration monitorContextConfiguration, Map <String , ? > globalYamlConfig) {
         this.randomAccessFile = randomAccessFile;
         this.log = log;
         this.latch = latch;
@@ -61,8 +62,9 @@ public class LogMetricsProcessor implements Runnable {
         this.currentFile = currentFile;
         this.searchPatterns = createPattern(this.log.getSearchStrings());
         this.eventsServiceDataManager = eventsServiceDataManager;
+        this.globalYamlConfig = globalYamlConfig;
         this.offset = offset;
-        this.smtp = new SMTPEmailProcessor(monitorContextConfiguration);
+        this.smtp = new SMTPEmailProcessor(monitorContextConfiguration.getConfigYml());
     }
 
     public void run() {

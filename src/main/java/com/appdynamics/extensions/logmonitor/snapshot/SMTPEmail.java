@@ -3,6 +3,7 @@ package com.appdynamics.extensions.logmonitor.snapshot;
 import com.appdynamics.extensions.conf.MonitorContextConfiguration;
 import com.appdynamics.extensions.logging.ExtensionsLoggerFactory;
 import com.appdynamics.extensions.logmonitor.LogMonitor;
+import java.util.Map;
 import java.util.Properties;
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -20,27 +21,29 @@ import org.slf4j.Logger;
 public class SMTPEmail {
 
     private static Logger LOGGER = ExtensionsLoggerFactory.getLogger(SMTPEmail.class);
-    private EmailObject emailObj;
     private String from;
     private String username;
     private String password;
     Properties emailProps;
     public String Recipients;
+    private Map<String,String> emailConfig;
+    private String emailSubj;
     
-    public SMTPEmail(MonitorContextConfiguration monitorContextConfiguration) {
-        emailObj = new EmailObject(monitorContextConfiguration);
-        from = emailObj.SMTPServerInformation().get("from");
-        username = emailObj.SMTPServerInformation().get("username");
-        password = emailObj.SMTPServerInformation().get("password");
-        Recipients = emailObj.SMTPServerInformation().get("emailRecipients");
+    public SMTPEmail(Map < String, ? > globalYamlConfig) {
+        emailConfig = (Map<String,String>) globalYamlConfig.get("smtpEmailAccount");
+        from = emailConfig.get("from");
+        username = emailConfig.get("username");
+        password = emailConfig.get("password");
+        Recipients = (String) globalYamlConfig.get("emailRecipients");
+        emailSubj = (String) globalYamlConfig.get("emailSubject");
         emailProps = new Properties();
         
         emailProps.put("mail.smtp.auth", "true");
         // to be implemented - enable support for tls or ssl
         emailProps.put("mail.smtp.starttls.enable", "true");
-        //emailProps.put("mail.smtp.host", emailObj.SMTPServerInformation().get("host"));
-        emailProps.put("mail.smtp.ssl.trust", emailObj.SMTPServerInformation().get("host"));
-        emailProps.put("mail.smtp.port", emailObj.SMTPServerInformation().get("port"));
+        emailProps.put("mail.smtp.host", emailConfig.get("host"));
+        emailProps.put("mail.smtp.ssl.trust", emailConfig.get("host"));
+        emailProps.put("mail.smtp.port", emailConfig.get("port"));
     }
     
     public void sendEmail(String Body,InternetAddress[] recipients) {
@@ -64,7 +67,7 @@ public class SMTPEmail {
             
             
             // Set Subject
-            message.setSubject(emailObj.emailControlInformaiton().get("emailSubject"));
+            message.setSubject(emailSubj);
 
             // Put the content of your message
             message.setContent(Body,"text/html");
@@ -72,7 +75,7 @@ public class SMTPEmail {
             // Send message
             Transport.send(message);
 
-        } catch (MessagingException e) {
+        } catch (Exception e) {
             LOGGER.warn("Email sending exception: " + e.toString());
         }
     }
