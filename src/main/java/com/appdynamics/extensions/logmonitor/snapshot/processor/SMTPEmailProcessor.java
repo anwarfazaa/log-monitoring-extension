@@ -12,6 +12,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
+import org.bitbucket.kienerj.OptimizedRandomAccessFile;
 
 /**
  *
@@ -26,6 +27,7 @@ public class SMTPEmailProcessor {
     EmailStyle emailStyle;
     Boolean isSnapShotEnabled;
     Boolean isSMTPSnapshotEnabled;
+    int offset;
     
     public SMTPEmailProcessor(Map<String,?> globalConfigYml) {
         this.globalConfigYml = globalConfigYml;
@@ -34,6 +36,7 @@ public class SMTPEmailProcessor {
         emailContent = "";
         isSnapShotEnabled = (Boolean) globalConfigYml.get("LogSnapshots");
         isSMTPSnapshotEnabled = (Boolean) globalConfigYml.get("SMTPBasedSnapshots");
+        offset = (int) globalConfigYml.get("emailmatchOffSet");
     }
     
     public InternetAddress[] prepareReciepientsList() throws AddressException {
@@ -57,11 +60,31 @@ public class SMTPEmailProcessor {
         return Body;
     }
     
-    public void addEmailContent(String logname,String metricName,String content) {
+    public void addEmailContent(String logname,String metricName,String content,OptimizedRandomAccessFile randomAccessFile) {
         if (isSnapShotEnabled && isSMTPSnapshotEnabled) {
-            this.emailContent+= "<tr><td valign=\"top\">" + logname + "<br><br>Pattren:" + metricName + "</td><td>" + content + "</td></tr>";
+            try{
+                if (offset > 0) {
+                    StringBuilder sb = new StringBuilder(content);
+                    long originalFilePointerPosition = randomAccessFile.getFilePointer();
+                    for (int i = 0; i < offset; i++) {
+                        sb.append("<br>");
+                        sb.append(randomAccessFile.readLine()).append('\n');
+                        
+                    }
+                    content = sb.toString();
+                    randomAccessFile.seek(originalFilePointerPosition);
+                }
+                this.emailContent+= "<tr><td valign=\"top\">" + logname + "<br><br>Pattren:" + metricName + "</td><td>" + content + "</td></tr>";
+            } catch (Exception ex){
+                
+            }
         }
     }
+    
+    public void buildOffSet(String data,int maxoffset){
+        
+    }
+    
     
     public void executeEmailSender() {
         if (isSnapShotEnabled && isSMTPSnapshotEnabled) {
