@@ -97,6 +97,7 @@ public class LogMetricsProcessor implements Runnable {
         updateCurrentFilePointer(currentFile.getPath(), currentFilePointer, currentFileCreationTime);
         LOGGER.info(String.format("Successfully processed log file [%s]",
                 randomAccessFile));
+        smtp.executeEmailSender();
     }
 
     private void setBaseOccurrenceCountForConfiguredPatterns() {
@@ -116,9 +117,8 @@ public class LogMetricsProcessor implements Runnable {
             String currentKey = getSearchStringPrefix() + searchPattern.getDisplayName() + METRIC_SEPARATOR;
             
             while (matcher.find()) {
-                // Send email snapshot after find
-                // this will be checked.
-                smtp.executeEmailSender(stringToCheck);
+                
+                
                 
                 BigInteger occurrences = new BigInteger(logMetrics.getMetrics().get(currentKey + OCCURRENCES)
                         .getMetricValue());
@@ -126,10 +126,12 @@ public class LogMetricsProcessor implements Runnable {
                 LOGGER.info("Match found for pattern: {} in log: {}", searchPattern.getDisplayName(), log.getDisplayName());
                 logMetrics.add(metricName, new Metric(metricName, String.valueOf(occurrences.add(BigInteger.ONE)),
                         logMetrics.getMetricPrefix() + METRIC_SEPARATOR + metricName));
-
+                smtp.addEmailContent(log.getDisplayName() , stringToCheck);
                 if (searchPattern.getPrintMatchedString()) {
                     LOGGER.info("Adding actual matches to the queue for printing for log: {}", log.getDisplayName());
                     String replacedWord = matcher.group().trim();
+                    
+                    
                     if (searchPattern.getCaseSensitive()) {
                         metricName = currentKey + MATCHES + replacedWord;
                     } else {
@@ -145,6 +147,7 @@ public class LogMetricsProcessor implements Runnable {
                 }
             }
         }
+        
     }
 
     private void updateCurrentFilePointer(String filePath, long lastReadPosition, long creationTimestamp) {

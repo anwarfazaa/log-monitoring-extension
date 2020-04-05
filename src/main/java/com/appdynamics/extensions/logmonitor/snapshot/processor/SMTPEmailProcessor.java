@@ -5,7 +5,7 @@
  */
 package com.appdynamics.extensions.logmonitor.snapshot.processor;
 
-import com.appdynamics.extensions.conf.MonitorContextConfiguration;
+import com.appdynamics.extensions.logmonitor.snapshot.EmailStyle;
 import com.appdynamics.extensions.logmonitor.snapshot.SMTPEmail;
 import java.util.Map;
 import java.util.logging.Level;
@@ -21,18 +21,20 @@ public class SMTPEmailProcessor {
     
     SMTPEmail smtp;
     Map<String,?> globalConfigYml;
+    String emailContent;
+    String Body;
+    EmailStyle emailStyle;
     
     public SMTPEmailProcessor(Map<String,?> globalConfigYml) {
         this.globalConfigYml = globalConfigYml;
         smtp = new SMTPEmail(this.globalConfigYml);
+        emailStyle = new EmailStyle();
+        emailContent = "";
     }
     
     public InternetAddress[] prepareReciepientsList() throws AddressException {
-       //String[] retrivedReciepientsList = smtp.Recipients.split(",",0);
        String RecipeintsListString = (String) globalConfigYml.get("emailRecipients");
        String[] retrivedReciepientsList = RecipeintsListString.split(",",0);
-       System.out.println("*************");
-       System.out.println(retrivedReciepientsList[0]);
        InternetAddress[] toAddress = new InternetAddress[retrivedReciepientsList.length];
         
        
@@ -43,15 +45,26 @@ public class SMTPEmailProcessor {
        return toAddress;
     }
     
-    public String emailBeautifier(String Body){
-        // to be implemented
-        // add html style to email
+    public String emailBeautifier(){
+        Body = "" +
+        "<html><body><table border=\"1\"> " +
+        emailStyle.ExtensionHeader +        
+        this.emailContent +        
+        "</table></body></table>";
+        
         return Body;
     }
     
-    public void executeEmailSender(String log) {
+    public void addEmailContent(String logname,String content) {
+        this.emailContent+= "<tr><td>" + logname + "</td><td>" + content + "<td></td>";
+    }
+    
+    public void executeEmailSender() {
         try {
-            smtp.sendEmail(emailBeautifier(log), prepareReciepientsList());
+            if (!"".equals(this.emailContent)) {
+                smtp.sendEmail(emailBeautifier(), prepareReciepientsList());
+            }
+            this.emailContent = "";
         } catch (AddressException ex) {
             Logger.getLogger(SMTPEmailProcessor.class.getName()).log(Level.SEVERE, "Address : retrivedReciepientsList[i] ", ex);
         }
