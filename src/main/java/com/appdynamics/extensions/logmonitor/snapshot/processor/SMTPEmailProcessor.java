@@ -24,12 +24,16 @@ public class SMTPEmailProcessor {
     String emailContent;
     String Body;
     EmailStyle emailStyle;
+    Boolean isSnapShotEnabled;
+    Boolean isSMTPSnapshotEnabled;
     
     public SMTPEmailProcessor(Map<String,?> globalConfigYml) {
         this.globalConfigYml = globalConfigYml;
         smtp = new SMTPEmail(this.globalConfigYml);
         emailStyle = new EmailStyle();
         emailContent = "";
+        isSnapShotEnabled = (Boolean) globalConfigYml.get("LogSnapshots");
+        isSMTPSnapshotEnabled = (Boolean) globalConfigYml.get("SMTPBasedSnapshots");
     }
     
     public InternetAddress[] prepareReciepientsList() throws AddressException {
@@ -40,7 +44,6 @@ public class SMTPEmailProcessor {
        
        for( int i = 0; i < retrivedReciepientsList.length; i++ ) {
                toAddress[i] = new InternetAddress(retrivedReciepientsList[i]);
-                Logger.getLogger(SMTPEmailProcessor.class.getName()).log(Level.SEVERE, null, "Address : retrivedReciepientsList[i] ");
         }
        return toAddress;
     }
@@ -51,22 +54,26 @@ public class SMTPEmailProcessor {
         emailStyle.ExtensionHeader +        
         this.emailContent +        
         "</table></body></table>";
-        
         return Body;
     }
     
-    public void addEmailContent(String logname,String content) {
-        this.emailContent+= "<tr><td>" + logname + "</td><td>" + content + "<td></td>";
+    public void addEmailContent(String logname,String metricName,String content) {
+        if (isSnapShotEnabled && isSMTPSnapshotEnabled) {
+            this.emailContent+= "<tr><td valign=\"top\">" + logname + "<br><br>Pattren:" + metricName + "</td><td>" + content + "</td></tr>";
+        }
     }
     
     public void executeEmailSender() {
-        try {
-            if (!"".equals(this.emailContent)) {
-                smtp.sendEmail(emailBeautifier(), prepareReciepientsList());
+        if (isSnapShotEnabled && isSMTPSnapshotEnabled) {
+            try {
+                if (!"".equals(this.emailContent)) {
+                    smtp.sendEmail(emailBeautifier(), prepareReciepientsList());
+                }
+                this.emailContent = "";
+            } catch (AddressException ex) {
+                Logger.getLogger(SMTPEmailProcessor.class.getName()).log(Level.SEVERE, "Address : retrivedReciepientsList[i] ", ex);
             }
-            this.emailContent = "";
-        } catch (AddressException ex) {
-            Logger.getLogger(SMTPEmailProcessor.class.getName()).log(Level.SEVERE, "Address : retrivedReciepientsList[i] ", ex);
         }
-    }
+    }  
 }
+

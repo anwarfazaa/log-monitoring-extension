@@ -126,7 +126,7 @@ public class LogMetricsProcessor implements Runnable {
                 LOGGER.info("Match found for pattern: {} in log: {}", searchPattern.getDisplayName(), log.getDisplayName());
                 logMetrics.add(metricName, new Metric(metricName, String.valueOf(occurrences.add(BigInteger.ONE)),
                         logMetrics.getMetricPrefix() + METRIC_SEPARATOR + metricName));
-                smtp.addEmailContent(log.getDisplayName() , stringToCheck);
+                
                 if (searchPattern.getPrintMatchedString()) {
                     LOGGER.info("Adding actual matches to the queue for printing for log: {}", log.getDisplayName());
                     String replacedWord = matcher.group().trim();
@@ -137,6 +137,7 @@ public class LogMetricsProcessor implements Runnable {
                     } else {
                         metricName = currentKey + MATCHES + WordUtils.capitalizeFully(replacedWord);
                     }
+                    smtp.addEmailContent(log.getDisplayName(), searchPattern.getDisplayName() , stringToCheck);
                     logMetrics.add(metricName, logMetrics.getMetricPrefix() + METRIC_SEPARATOR + metricName);
                 }
 
