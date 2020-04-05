@@ -50,23 +50,21 @@ eventsServiceParameters:
   useSSL: false
   
 # For enabling/disabling log snapshots, also to enable needed features
-# feature #1 enable snapshots via Controller custom events, actions & policies.
-# feature #2 enable snapshots via SMTP email
-LogSnapshots: true
+LogSnapshots: false
 
+# feature #1 enable snapshots via Controller custom events, actions & policies.
 ControllerBasedSnapshots : false #to be implemented
 
-SMTPBasedSnapshots : true
+# feature #2 enable snapshots via SMTP email
+SMTPBasedSnapshots : false
   
 # For setting up SMTP account information 
-# for security values are: ssl , tls , false
 smtpEmailAccount:
   from : "accountname@email.com"  
   username: "user"
   password: "password"
   host: "mail.localhost"
   port: "25"
-  security: "ssl"
 
 # for multiple emails split them by using comma ,
 emailConfiguration:
