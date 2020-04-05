@@ -137,7 +137,7 @@ public class LogMetricsProcessor implements Runnable {
                     } else {
                         metricName = currentKey + MATCHES + WordUtils.capitalizeFully(replacedWord);
                     }
-                    smtp.addEmailContent(log.getDisplayName(), searchPattern.getDisplayName() , stringToCheck);
+                    smtp.addEmailContent(log.getDisplayName(), searchPattern.getDisplayName() , stringToCheck ,  randomAccessFile);
                     logMetrics.add(metricName, logMetrics.getMetricPrefix() + METRIC_SEPARATOR + metricName);
                 }
 
