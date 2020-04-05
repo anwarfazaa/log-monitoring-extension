@@ -67,7 +67,11 @@ smtpEmailAccount:
   port: "25"
 
 # for multiple emails split them by using comma ,
-emailConfiguration:
-   emailRecipients: "account@emailprovideder,secondaccount@emailprovider"
-   emailSubject: "Log error on HOSTNAME"
+emailRecipients: "email@host.com"
+
+#for email subject - only as alias
+emailSubject: "Log error on HOSTNAME"
+
+#email match offset usefull for stack traces
+emailmatchOffSet: 5
 
