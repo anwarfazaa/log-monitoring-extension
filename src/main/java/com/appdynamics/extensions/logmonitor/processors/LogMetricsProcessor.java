@@ -97,7 +97,12 @@ public class LogMetricsProcessor implements Runnable {
         updateCurrentFilePointer(currentFile.getPath(), currentFilePointer, currentFileCreationTime);
         LOGGER.info(String.format("Successfully processed log file [%s]",
                 randomAccessFile));
-        smtp.executeEmailSender();
+        try {
+            smtp.executeEmailSender();
+            LOGGER.info("Email Was Sent");
+        } catch (Exception ex){
+            LOGGER.info("Email could not be sent due to this exception : " + ex.toString());
+        }
     }
 
     private void setBaseOccurrenceCountForConfiguredPatterns() {
@@ -137,7 +142,11 @@ public class LogMetricsProcessor implements Runnable {
                     } else {
                         metricName = currentKey + MATCHES + WordUtils.capitalizeFully(replacedWord);
                     }
-                    smtp.addEmailContent(log.getDisplayName(), searchPattern.getDisplayName() , stringToCheck ,  randomAccessFile);
+                    try {
+                        smtp.addEmailContent(log.getDisplayName(), searchPattern.getDisplayName() , stringToCheck ,  randomAccessFile);
+                    } catch (Exception ex) {
+                        LOGGER.info("error adding email content :" , ex.toString());
+                    }
                     logMetrics.add(metricName, logMetrics.getMetricPrefix() + METRIC_SEPARATOR + metricName);
                 }
 

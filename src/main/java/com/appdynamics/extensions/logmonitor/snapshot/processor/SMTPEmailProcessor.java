@@ -7,6 +7,7 @@ package com.appdynamics.extensions.logmonitor.snapshot.processor;
 
 import com.appdynamics.extensions.logmonitor.snapshot.EmailStyle;
 import com.appdynamics.extensions.logmonitor.snapshot.SMTPEmail;
+import java.io.IOException;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -60,9 +61,9 @@ public class SMTPEmailProcessor {
         return Body;
     }
     
-    public void addEmailContent(String logname,String metricName,String content,OptimizedRandomAccessFile randomAccessFile) {
+    public void addEmailContent(String logname,String metricName,String content,OptimizedRandomAccessFile randomAccessFile) throws Exception {
         if (isSnapShotEnabled && isSMTPSnapshotEnabled) {
-            try{
+            
                 if (offset > 0) {
                     StringBuilder sb = new StringBuilder(content);
                     long originalFilePointerPosition = randomAccessFile.getFilePointer();
@@ -75,9 +76,7 @@ public class SMTPEmailProcessor {
                     randomAccessFile.seek(originalFilePointerPosition);
                 }
                 this.emailContent+= "<tr><td valign=\"top\">" + logname + "<br><br>Pattren:" + metricName + "</td><td>" + content + "</td></tr>";
-            } catch (Exception ex){
-                
-            }
+           
         }
     }
     
@@ -86,17 +85,18 @@ public class SMTPEmailProcessor {
     }
     
     
-    public void executeEmailSender() {
+    public void executeEmailSender() throws Exception  {
         if (isSnapShotEnabled && isSMTPSnapshotEnabled) {
-            try {
+          
                 if (!"".equals(this.emailContent)) {
                     smtp.sendEmail(emailBeautifier(), prepareReciepientsList());
-                }
+                
                 this.emailContent = "";
-            } catch (AddressException ex) {
-                Logger.getLogger(SMTPEmailProcessor.class.getName()).log(Level.SEVERE, "Address : retrivedReciepientsList[i] ", ex);
-            }
+           
         }
-    }  
+    }
+    }
 }
+    
+
 

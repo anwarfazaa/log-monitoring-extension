@@ -34,36 +34,46 @@ public class SMTPEmail {
         from = emailConfig.get("from");
         username = emailConfig.get("username");
         password = emailConfig.get("password");
-        Recipients = (String) globalYamlConfig.get("emailRecipients");
         emailSubj = (String) globalYamlConfig.get("emailSubject");
-        emailProps = new Properties();
+        emailProps = System.getProperties();
         
-        emailProps.put("mail.smtp.auth", "true");
-        // to be implemented - enable support for tls or ssl
-        emailProps.put("mail.smtp.starttls.enable", "true");
+        
         emailProps.put("mail.smtp.host", emailConfig.get("host"));
-        emailProps.put("mail.smtp.ssl.trust", emailConfig.get("host"));
+        emailProps.put("mail.smtp.auth", "false");
+        emailProps.put("mail.smtp.ssl.trust","*");
+        emailProps.put("mail.debug", "true");
         emailProps.put("mail.smtp.port", emailConfig.get("port"));
+        emailProps.put("mail.smtp.starttls.enable", "true");
+        
+        
     }
     
-    public void sendEmail(String Body,InternetAddress[] recipients) {
+    public void sendEmail(String Body,InternetAddress[] recipients) throws Exception {
     
     // Get the Session object
-    Session session = Session.getInstance(emailProps,
-    new javax.mail.Authenticator() {
+            
+          Session session = Session.getDefaultInstance(emailProps);
+   
+                  /*
+                  new javax.mail.Authenticator() {
         @Override
         protected PasswordAuthentication getPasswordAuthentication() {
             return new PasswordAuthentication(username, password);
             }
-        });
-
-        try {
+        });*/
+          
+        //enabled debug
+        session.setDebug(true);
+        
             // Create a default MimeMessage object
             Message message = new MimeMessage(session);
 
             message.setFrom(new InternetAddress(from));
 
-            message.setRecipients(Message.RecipientType.TO,recipients);
+            for (InternetAddress rec : recipients) {
+                message.addRecipient(Message.RecipientType.TO,rec);
+                LOGGER.info("Email will be sent to: " + rec.getAddress());
+            }
             
             
             // Set Subject
@@ -74,10 +84,10 @@ public class SMTPEmail {
 
             // Send message
             Transport.send(message);
+            
+           
 
-        } catch (Exception e) {
-            LOGGER.warn("Email sending exception: " + e.toString());
-        }
+        
     }
     
 }
