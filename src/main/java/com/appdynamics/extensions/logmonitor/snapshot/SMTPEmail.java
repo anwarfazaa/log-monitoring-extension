@@ -41,7 +41,6 @@ public class SMTPEmail {
         emailProps.put("mail.smtp.host", emailConfig.get("host"));
         emailProps.put("mail.smtp.auth", "false");
         emailProps.put("mail.smtp.ssl.trust","*");
-        emailProps.put("mail.debug", "true");
         emailProps.put("mail.smtp.port", emailConfig.get("port"));
         emailProps.put("mail.smtp.starttls.enable", "true");
         
@@ -54,17 +53,6 @@ public class SMTPEmail {
             
           Session session = Session.getDefaultInstance(emailProps);
    
-                  /*
-                  new javax.mail.Authenticator() {
-        @Override
-        protected PasswordAuthentication getPasswordAuthentication() {
-            return new PasswordAuthentication(username, password);
-            }
-        });*/
-          
-        //enabled debug
-        session.setDebug(true);
-        
             // Create a default MimeMessage object
             Message message = new MimeMessage(session);
 
