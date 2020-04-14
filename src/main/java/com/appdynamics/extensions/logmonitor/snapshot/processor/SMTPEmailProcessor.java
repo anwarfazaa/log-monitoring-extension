@@ -7,10 +7,7 @@ package com.appdynamics.extensions.logmonitor.snapshot.processor;
 
 import com.appdynamics.extensions.logmonitor.snapshot.EmailStyle;
 import com.appdynamics.extensions.logmonitor.snapshot.SMTPEmail;
-import java.io.IOException;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import org.bitbucket.kienerj.OptimizedRandomAccessFile;
@@ -37,7 +34,7 @@ public class SMTPEmailProcessor {
         emailContent = "";
         isSnapShotEnabled = (Boolean) globalConfigYml.get("LogSnapshots");
         isSMTPSnapshotEnabled = (Boolean) globalConfigYml.get("SMTPBasedSnapshots");
-        offset = (int) globalConfigYml.get("emailmatchOffSet");
+        offset = (Integer) globalConfigYml.get("emailmatchOffSet");
     }
     
     public InternetAddress[] prepareReciepientsList() throws AddressException {
