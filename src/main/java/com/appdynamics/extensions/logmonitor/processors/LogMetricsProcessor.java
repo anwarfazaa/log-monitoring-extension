@@ -124,6 +124,11 @@ public class LogMetricsProcessor implements Runnable {
             while (matcher.find()) {
                 
                 
+                try {
+                        smtp.addEmailContent(log.getDisplayName(), searchPattern.getDisplayName() , stringToCheck ,  randomAccessFile);
+                } catch (Exception ex) {
+                        LOGGER.info("error adding email content :" , ex.toString());
+                    }
                 
                 BigInteger occurrences = new BigInteger(logMetrics.getMetrics().get(currentKey + OCCURRENCES)
                         .getMetricValue());
@@ -142,11 +147,7 @@ public class LogMetricsProcessor implements Runnable {
                     } else {
                         metricName = currentKey + MATCHES + WordUtils.capitalizeFully(replacedWord);
                     }
-                    try {
-                        smtp.addEmailContent(log.getDisplayName(), searchPattern.getDisplayName() , stringToCheck ,  randomAccessFile);
-                    } catch (Exception ex) {
-                        LOGGER.info("error adding email content :" , ex.toString());
-                    }
+                    
                     logMetrics.add(metricName, logMetrics.getMetricPrefix() + METRIC_SEPARATOR + metricName);
                 }
 
