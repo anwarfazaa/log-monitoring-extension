@@ -10,6 +10,7 @@ package com.appdynamics.extensions.logmonitor.processors;
 
 import com.appdynamics.extensions.logging.ExtensionsLoggerFactory;
 import com.appdynamics.extensions.logmonitor.LogMonitor;
+import com.appdynamics.extensions.logmonitor.LogMonitorTask;
 import com.appdynamics.extensions.logmonitor.config.FilePointer;
 import com.appdynamics.extensions.util.PathResolver;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -21,6 +22,11 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
 import static com.appdynamics.extensions.logmonitor.util.Constants.FILEPOINTER_FILENAME;
+import java.io.UnsupportedEncodingException;
+import java.net.URL;
+import java.net.URLDecoder;
+import java.nio.file.Path;
+import org.apache.commons.lang.StringUtils;
 
 /**
  * @author Aditya Jagtiani
@@ -83,7 +89,45 @@ public class FilePointerProcessor {
         LOGGER.info("Filepointers initialized with: " + filePointers);
     }
 
-    private String getFilePointerPath() {
-        return PathResolver.resolveDirectory(LogMonitor.class).getPath() + File.separator + FILEPOINTER_FILENAME;
+        private String getFilePointerPath() {
+        String path = null;
+        try {
+            URL classUrl = LogMonitor.class.getResource(
+                    LogMonitor.class.getSimpleName() + ".class");
+            String jarPath = classUrl.toURI().toString();
+
+            // workaround for jar file
+            jarPath = jarPath.replace("jar:", "").replace("file:", "");
+            if (jarPath.contains("!")) {
+                jarPath = jarPath.substring(0, jarPath.indexOf("!"));
+            }
+            File file = new File(jarPath);
+            String jarDir = file.getParentFile().toURI().getPath();
+
+            if (jarDir.endsWith(File.separator)) {
+                path = jarDir + FILEPOINTER_FILENAME;
+
+            } else {
+                path = String.format("%s%s%s", jarDir,
+                        File.separator, FILEPOINTER_FILENAME);
+            }
+        } catch (Exception ex) {
+            LOGGER.warn("Unable to resolve installation dir, finding an alternative.");
+        }
+
+        if (StringUtils.isBlank(path)) {
+            path = String.format("%s%s%s", new File(".").getAbsolutePath(),
+                    File.separator, FILEPOINTER_FILENAME);
+        }
+        try {
+            path = URLDecoder.decode(path, "UTF-8");
+
+        } catch (UnsupportedEncodingException e) {
+            LOGGER.warn(String.format("Unable to decode file path [%s] using UTF-8", path));
+        }
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("Filepointer path: " + path);
+        }
+        return path;
     }
 }
