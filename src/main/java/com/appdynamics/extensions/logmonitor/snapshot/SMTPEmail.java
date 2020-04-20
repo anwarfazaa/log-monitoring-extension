@@ -26,48 +26,66 @@ public class SMTPEmail {
     private String password;
     Properties emailProps;
     public String Recipients;
-    private Map<String,String> emailConfig;
+    private Map<String,?> emailConfig;
     private String emailSubj;
+    private Boolean enableAuth;
+    private Boolean enableTls;
     
     public SMTPEmail(Map < String, ? > globalYamlConfig) {
-        emailConfig = (Map<String,String>) globalYamlConfig.get("smtpEmailAccount");
-        from = emailConfig.get("from");
-        username = emailConfig.get("username");
-        password = emailConfig.get("password");
+        emailConfig = (Map<String,?>) globalYamlConfig.get("smtpEmailAccount");
+        from = (String) emailConfig.get("from");
+        enableAuth = (Boolean) emailConfig.get("enableAuth");
+        enableTls = (Boolean) emailConfig.get("enableTls");
+        username = (String) emailConfig.get("username");
+        password = (String) emailConfig.get("password");
         emailSubj = (String) globalYamlConfig.get("emailSubject");
         emailProps = System.getProperties();
         
         
         emailProps.put("mail.smtp.host", emailConfig.get("host"));
-        emailProps.put("mail.smtp.auth", "false");
+        emailProps.put("mail.smtp.auth", enableAuth.toString());
         emailProps.put("mail.smtp.ssl.trust","*");
         emailProps.put("mail.smtp.port", emailConfig.get("port"));
-        emailProps.put("mail.smtp.starttls.enable", "true");
+        emailProps.put("mail.smtp.starttls.enable", enableTls.toString());
         
         
     }
     
     public void sendEmail(String Body,InternetAddress[] recipients) throws Exception {
     
-    // Get the Session object
+    
             
-          Session session = Session.getDefaultInstance(emailProps);
-   
+        // check if login is enabled or not
+          Session session;
+          if (enableAuth) {
+              session = Session.getInstance(emailProps,
+                    new javax.mail.Authenticator() {
+                        @Override
+                        protected PasswordAuthentication getPasswordAuthentication() {
+                            return new PasswordAuthentication(username, password);
+                        }
+                    });
+          } else {
+          session = Session.getDefaultInstance(emailProps);
+          }
+          
             // Create a default MimeMessage object
-            Message message = new MimeMessage(session);
-
+            Message message;
+            
+            
+            message = new MimeMessage(session);
+            
+            // the email account will be sending the email
             message.setFrom(new InternetAddress(from));
 
-            for (InternetAddress rec : recipients) {
-                message.addRecipient(Message.RecipientType.TO,rec);
-                LOGGER.info("Email will be sent to: " + rec.getAddress());
-            }
+            // Set Message recipients
+            message.setRecipients(Message.RecipientType.TO, recipients);
             
             
             // Set Subject
             message.setSubject(emailSubj);
 
-            // Put the content of your message
+            // Put the content of your message with the type
             message.setContent(Body,"text/html");
 
             // Send message
