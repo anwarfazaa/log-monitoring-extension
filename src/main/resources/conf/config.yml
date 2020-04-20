@@ -59,12 +59,15 @@ ControllerBasedSnapshots : false #to be implemented
 SMTPBasedSnapshots : false
   
 # For setting up SMTP account information 
+# all information below are entered as String and must be encapsulated with two double quotes " "
 smtpEmailAccount:
-  from : "accountname@email.com"  
+  from : "accountname@email.com"
+  enableAuth : false
   username: "user"
   password: "password"
   host: "mail.localhost"
   port: "25"
+  enableTls : true
 
 # for multiple emails split them by using comma ,
 emailRecipients: "email@host.com"
