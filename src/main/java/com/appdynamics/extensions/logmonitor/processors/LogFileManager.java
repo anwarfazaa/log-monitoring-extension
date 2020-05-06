@@ -30,9 +30,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
-import java.util.regex.Pattern;
+
 
 import static com.appdynamics.extensions.logmonitor.util.LogMonitorUtil.*;
+
 
 /**
  * @author Aditya Jagtiani
@@ -49,12 +50,12 @@ public class LogFileManager {
     private Map<String , ?> globalConfigYml;
 
     public LogFileManager(FilePointerProcessor filePointerProcessor, Log log,
-                          MonitorContextConfiguration monitorContextConfiguration,Map<String , ?> globalConfigYml) {
+                          MonitorContextConfiguration monitorContextConfiguration) {
         this.log = log;
         this.filePointerProcessor = filePointerProcessor;
         this.monitorContextConfiguration = monitorContextConfiguration;
         this.executorService = this.monitorContextConfiguration.getContext().getExecutorService();
-        this.globalConfigYml = globalConfigYml;
+        
     }
 
     public LogMetrics processLogMetrics() throws Exception {
@@ -74,6 +75,11 @@ public class LogFileManager {
                 offset = (Integer) this.monitorContextConfiguration.getConfigYml().get("logMatchOffset");
                 if (hasLogRolledOver(dynamicLogPath, file.getPath(), file.length())) {
                     List<File> filesToBeProcessed = getFilesToBeProcessedFromDirectory(currentTimeStampFromFilePointer, dirPath);
+                    LOGGER.info("DIR PATH :" + dirPath);
+                    LOGGER.info("FILE PROCESSESD SIZE: " + filesToBeProcessed.size());
+                    for (int x = 0 ; x < filesToBeProcessed.size() ; x++){
+                        LOGGER.info("ITEM TO BE PROCESSED" + filesToBeProcessed.get(x).toString());
+                    }
                     latch = new CountDownLatch(filesToBeProcessed.size());
                     processRolledOverLogs(filesToBeProcessed, currentTimeStampFromFilePointer, currentFilePointerPosition,
                             logMetrics, latch);
@@ -103,7 +109,7 @@ public class LogFileManager {
                 randomAccessFile.seek(0);
             }
             executorService.execute("LogMetricsProcessor", new LogMetricsProcessor(randomAccessFile, log, latch,
-                    logMetrics, currentFile, eventsServiceDataManager, offset , monitorContextConfiguration , globalConfigYml));
+                    logMetrics, currentFile, eventsServiceDataManager, offset , monitorContextConfiguration ));
         }
     }
 
@@ -115,7 +121,7 @@ public class LogFileManager {
         OptimizedRandomAccessFile randomAccessFile = new OptimizedRandomAccessFile(file, "r");
         randomAccessFile.seek(currentFilePointerPosition);
         executorService.execute("LogMetricsProcessor", new LogMetricsProcessor(randomAccessFile, log, latch, logMetrics,
-                file, eventsServiceDataManager, offset , monitorContextConfiguration , globalConfigYml));
+                file, eventsServiceDataManager, offset , monitorContextConfiguration ));
     }
 
     private void setNewFilePointer(String dynamicLogPath, CopyOnWriteArrayList<FilePointer> filePointers) {
@@ -142,15 +148,19 @@ public class LogFileManager {
         return filePointer.getFileCreationTime();
     }
 
+    // Modify to use regex for file extraction
     private List<File> getFilesToBeProcessedFromDirectory(long currentTimeStampFromFilePointer, String path)
             throws IOException {
         List<File> filesToBeProcessed = Lists.newArrayList();
         File directory = new File(path);
 
         if (directory.isDirectory()) {
+            //FileFilter fileFilter = new WildcardFileFilter(log.getLogName());
             FileFilter fileFilter = new WildcardFileFilter(log.getLogName());
+            
             File[] files = directory.listFiles(fileFilter);
-
+            
+            
             if (files != null && files.length > 0) {
                 for (File file : files) {
                     long currentFileCreationTime = getCurrentFileCreationTimeStamp(file);
@@ -173,6 +183,9 @@ public class LogFileManager {
         if (directory.isDirectory()) {
             FileFilter fileFilter = new WildcardFileFilter(log.getLogName());
             File[] files = directory.listFiles(fileFilter);
+            
+            
+            
             if (files != null && files.length > 0) {
                 logFile = getLatestFile(files);
                 if (!logFile.canRead()) {

@@ -54,7 +54,7 @@ public class LogMetricsProcessor implements Runnable {
 
     LogMetricsProcessor(OptimizedRandomAccessFile randomAccessFile, Log log, CountDownLatch latch, LogMetrics logMetrics,
                         File currentFile, EventsServiceDataManager eventsServiceDataManager,
-                        int offset,MonitorContextConfiguration monitorContextConfiguration, Map <String , ? > globalYamlConfig) {
+                        int offset,MonitorContextConfiguration monitorContextConfiguration) {
         this.randomAccessFile = randomAccessFile;
         this.log = log;
         this.latch = latch;
@@ -97,6 +97,7 @@ public class LogMetricsProcessor implements Runnable {
         updateCurrentFilePointer(currentFile.getPath(), currentFilePointer, currentFileCreationTime);
         LOGGER.info(String.format("Successfully processed log file [%s]",
                 randomAccessFile));
+        
         try {
             smtp.executeEmailSender();
             LOGGER.info("Email Was Sent");
