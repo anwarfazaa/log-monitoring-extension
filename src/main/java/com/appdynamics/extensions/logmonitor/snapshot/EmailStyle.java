@@ -13,7 +13,10 @@ package com.appdynamics.extensions.logmonitor.snapshot;
  */
 public class EmailStyle {
     
-    public final String ExtensionHeader = "<tr><td align=\"center\" colspan=\"2\">AppDynamics Log Monitoring extension Alert<br>The below Lines were matched</td></tr>";
+    public String ExtensionHeader(String filefullname) {
+        return "<tr><td align=\"center\" colspan=\"2\">AppDynamics Log Monitoring extension Alert<br>The below Lines were matched in "+ filefullname + "</td></tr>";
+    }
     public final String ContentTableSettings = "";
+    
     
 }
