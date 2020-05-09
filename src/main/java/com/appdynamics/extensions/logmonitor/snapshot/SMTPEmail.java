@@ -29,24 +29,22 @@ public class SMTPEmail {
     private Map<String,?> emailConfig;
     private String emailSubj;
     private Boolean enableAuth;
-    private Boolean enableTls;
+
     
     public SMTPEmail(Map < String, ? > globalYamlConfig) {
         emailConfig = (Map<String,?>) globalYamlConfig.get("smtpEmailAccount");
         from = (String) emailConfig.get("from");
-        enableAuth = (Boolean) emailConfig.get("enableAuth");
-        enableTls = (Boolean) emailConfig.get("enableTls");
         username = (String) emailConfig.get("username");
         password = (String) emailConfig.get("password");
         emailSubj = (String) globalYamlConfig.get("emailSubject");
         emailProps = System.getProperties();
-        
+        enableAuth = Boolean.parseBoolean(emailConfig.get("enableAuth").toString());
         
         emailProps.put("mail.smtp.host", emailConfig.get("host"));
-        emailProps.put("mail.smtp.auth", enableAuth.toString());
+        emailProps.put("mail.smtp.auth", emailConfig.get("enableAuth"));
         emailProps.put("mail.smtp.ssl.trust","*");
         emailProps.put("mail.smtp.port", emailConfig.get("port"));
-        emailProps.put("mail.smtp.starttls.enable", enableTls.toString());
+        emailProps.put("mail.smtp.starttls.enable", emailConfig.get("enableTls"));
         
         
     }
