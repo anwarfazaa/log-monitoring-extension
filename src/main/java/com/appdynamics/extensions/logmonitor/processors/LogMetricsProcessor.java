@@ -50,7 +50,6 @@ public class LogMetricsProcessor implements Runnable {
     private LogEventsProcessor logEventsProcessor;
     private int offset;
     private SMTPEmailProcessor smtp;
-    private Map <String , ?> globalYamlConfig;
 
     LogMetricsProcessor(OptimizedRandomAccessFile randomAccessFile, Log log, CountDownLatch latch, LogMetrics logMetrics,
                         File currentFile, EventsServiceDataManager eventsServiceDataManager,
@@ -62,7 +61,6 @@ public class LogMetricsProcessor implements Runnable {
         this.currentFile = currentFile;
         this.searchPatterns = createPattern(this.log.getSearchStrings());
         this.eventsServiceDataManager = eventsServiceDataManager;
-        this.globalYamlConfig = globalYamlConfig;
         this.offset = offset;
         this.smtp = new SMTPEmailProcessor(monitorContextConfiguration.getConfigYml());
     }
@@ -85,6 +83,7 @@ public class LogMetricsProcessor implements Runnable {
         if (eventsServiceDataManager != null) {
             logEventsProcessor = new LogEventsProcessor(eventsServiceDataManager, offset, log);
         }
+        
         while ((currentLine = randomAccessFile.readLine()) != null) {
             incrementWordCountIfSearchStringMatched(searchPatterns, currentLine);
             currentFilePointer = randomAccessFile.getFilePointer();
@@ -98,12 +97,9 @@ public class LogMetricsProcessor implements Runnable {
         LOGGER.info(String.format("Successfully processed log file [%s]",
                 randomAccessFile));
         
-        try {
+        
             smtp.executeEmailSender();
-            LOGGER.info("Email Was Sent");
-        } catch (Exception ex){
-            LOGGER.info("Email could not be sent due to this exception : " + ex.toString());
-        }
+            
     }
 
     private void setBaseOccurrenceCountForConfiguredPatterns() {
@@ -126,7 +122,7 @@ public class LogMetricsProcessor implements Runnable {
                 
                 
                 try {
-                        smtp.addEmailContent(log.getDisplayName(), searchPattern.getDisplayName() , stringToCheck ,  randomAccessFile);
+                        smtp.addEmailContent(log.getDisplayName(), searchPattern.getDisplayName() , stringToCheck ,  randomAccessFile , currentFile);
                 } catch (Exception ex) {
                         LOGGER.info("error adding email content :" , ex.toString());
                     }
