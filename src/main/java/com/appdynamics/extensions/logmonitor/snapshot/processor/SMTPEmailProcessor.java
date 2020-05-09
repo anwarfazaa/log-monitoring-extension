@@ -7,6 +7,7 @@ package com.appdynamics.extensions.logmonitor.snapshot.processor;
 
 import com.appdynamics.extensions.logmonitor.snapshot.EmailStyle;
 import com.appdynamics.extensions.logmonitor.snapshot.SMTPEmail;
+import java.io.File;
 import java.util.Map;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
@@ -26,6 +27,7 @@ public class SMTPEmailProcessor {
     Boolean isSnapShotEnabled;
     Boolean isSMTPSnapshotEnabled;
     int offset;
+    String fullfilename;
     
     public SMTPEmailProcessor(Map<String,?> globalConfigYml) {
         this.globalConfigYml = globalConfigYml;
@@ -49,18 +51,18 @@ public class SMTPEmailProcessor {
        return toAddress;
     }
     
-    public String emailBeautifier(){
+    public String emailBeautifier(String fullFilePath){
         Body = "" +
         "<html><body><table border=\"1\"> " +
-        emailStyle.ExtensionHeader +        
+        emailStyle.ExtensionHeader(fullFilePath) +        
         this.emailContent +        
         "</table></body></table>";
         return Body;
     }
     
-    public void addEmailContent(String logname,String metricName,String content,OptimizedRandomAccessFile randomAccessFile) throws Exception {
+    public void addEmailContent(String logname,String metricName,String content,OptimizedRandomAccessFile randomAccessFile, File currentFile) throws Exception {
         if (isSnapShotEnabled && isSMTPSnapshotEnabled) {
-            
+                 fullfilename = currentFile.getAbsolutePath();
                 if (offset > 0) {
                     StringBuilder sb = new StringBuilder(content);
                     long originalFilePointerPosition = randomAccessFile.getFilePointer();
@@ -72,26 +74,22 @@ public class SMTPEmailProcessor {
                     content = sb.toString();
                     randomAccessFile.seek(originalFilePointerPosition);
                 }
-                this.emailContent+= "<tr><td valign=\"top\">" + logname + "<br><br>Pattren:" + metricName + "</td><td>" + content + "</td></tr>";
+                this.emailContent+= "<tr><td valign=\"top\">" + logname + "<br><br>Pattren:" + metricName + "<br>File:" + currentFile.getName() + "</td><td>" + content + "</td></tr>";
            
         }
     }
     
-    public void buildOffSet(String data,int maxoffset){
-        
-    }
-    
+   
     
     public void executeEmailSender() throws Exception  {
         if (isSnapShotEnabled && isSMTPSnapshotEnabled) {
           
                 if (!"".equals(this.emailContent)) {
-                    smtp.sendEmail(emailBeautifier(), prepareReciepientsList());
+                    smtp.sendEmail(emailBeautifier(this.fullfilename), prepareReciepientsList());
                 
                 this.emailContent = "";
-           
+                }
         }
-    }
     }
 }
     
