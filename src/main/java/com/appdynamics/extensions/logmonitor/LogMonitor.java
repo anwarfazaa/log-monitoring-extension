@@ -62,7 +62,7 @@ public class LogMonitor extends ABaseMonitor {
         for (Log log : logsToMonitor) {
             LOGGER.info("Starting the Log Monitoring Task for log : " + log.getDisplayName());
             LogMonitorTask task = new LogMonitorTask(monitorContextConfiguration, taskExecutor.getMetricWriteHelper(),
-                    log, filePointerProcessor );
+                    log, filePointerProcessor , configYml);
             taskExecutor.submit(log.getDisplayName(), task);
         }
     }
