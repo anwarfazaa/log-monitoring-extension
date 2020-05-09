@@ -35,13 +35,15 @@ public class LogMonitorTask implements AMonitorTaskRunnable {
     private MonitorContextConfiguration monitorContextConfiguration;
     private Log log;
     private FilePointerProcessor filePointerProcessor;
-
+    private Map<String, ?> configYml;
+    
     public LogMonitorTask(MonitorContextConfiguration monitorContextConfiguration, MetricWriteHelper metricWriteHelper,
-                          Log log, FilePointerProcessor filePointerProcessor ) {
+                          Log log, FilePointerProcessor filePointerProcessor , Map<String, ?> configYml ) {
         this.monitorContextConfiguration = monitorContextConfiguration;
         this.metricWriteHelper = metricWriteHelper;
         this.log = log;
         this.filePointerProcessor = filePointerProcessor;
+        this.configYml = configYml;
     }
 
     public void run() {
