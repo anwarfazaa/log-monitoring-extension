@@ -33,6 +33,7 @@ import java.util.concurrent.CountDownLatch;
 
 
 import static com.appdynamics.extensions.logmonitor.util.LogMonitorUtil.*;
+import org.apache.commons.io.filefilter.RegexFileFilter;
 
 
 /**
@@ -47,7 +48,7 @@ public class LogFileManager {
     private MonitorExecutorService executorService;
     private EventsServiceDataManager eventsServiceDataManager;
     private int offset;
-    private Map<String , ?> globalConfigYml;
+    
 
     public LogFileManager(FilePointerProcessor filePointerProcessor, Log log,
                           MonitorContextConfiguration monitorContextConfiguration) {
@@ -109,7 +110,7 @@ public class LogFileManager {
                 randomAccessFile.seek(0);
             }
             executorService.execute("LogMetricsProcessor", new LogMetricsProcessor(randomAccessFile, log, latch,
-                    logMetrics, currentFile, eventsServiceDataManager, offset , monitorContextConfiguration ));
+                    logMetrics, currentFile, eventsServiceDataManager, offset , monitorContextConfiguration));
         }
     }
 
